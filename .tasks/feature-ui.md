@@ -66,4 +66,17 @@ Webová appka pro český trh rozdělí účet v restauraci mezi lidi u stolu. J
 
 ## Rozpory
 
-(zatím žádné)
+1. **Rozpad výsledku (spec 4.6)** není implementován. Kontrakt `ComputeResult` nenese podíly po položkách, díl slevy ani spropitné po osobách, a UI nesmí počítat. Karta ukazuje jen podíl osoby a převod, „Závazná je celková částka.“ je pod celkem.
+2. **Procento spropitného v režimu Celkem (spec 4.5, „8,6 %“)** vynecháno. Vyžaduje dělení, které api nenabízí.
+3. **Hlášky s částkou (spec 1.3, 1.4, 1.8)** jsou bez částky: „Sleva musí být menší než součet položek.“ a „Celkem nemůže být méně než účet bez spropitného.“. `BillError` částku nenese a při `ok: false` není `subtotal`. Spec píše částku v závorce.
+4. **Průběžný součet a „Po slevě“ (spec 4.1)** se zobrazují jen při `computeBill` → `ok: true`. Při chybě zmizí. Zdroj hodnot je jen `api`.
+5. **Jednotka `amount` v `spdPayload`** kontrakt neříká. Předávám haléře (typ `Haler`), spec 4.8 ukazuje `AM` s tečkou. Potvrdit, že spdPayload převádí z haléřů sám.
+6. **Vstup s mezerou (spec 4.4)**: zobrazená hodnota v poli se převádí přes `formatCzk` a odstraněním „ Kč“, takže obsahuje nezlomitelnou mezeru. Závisí na tom, že `parseAmount` mezery ignoruje (spec 4.4 to říká).
+7. **Umístění tlačítka Spočítat**: spec neurčuje, dala jsem ho na obrazovku 3 (Spropitné) jako poslední krok.
+8. **Mazání položky** (`Smazat položku`) spec neuvádí. Přidala jsem ho, bez něj by nešla opravit omylem zadaná položka.
+9. **Nový účet** vyžaduje dvojí ťuknutí (spec neuvádí potvrzení). Smaže `Bill`, `Settings` nechá (spec kap. 5).
+10. **Váhy 4–9 přes ťuknutí** (spec 4.3 říká jen 0→1→2→3→0): ťuknutí na váhu 4–9 přepne na 0. Změny nad 3 se dělají v rozbalovací části „Váhy 4 až 9“.
+11. **Jazyk a stack**: spec kap. 7 říká „HTML, CSS, TypeScript“, zadání a kontrakt říkají `src/splitBill.js` a kontrakt `src/rozuctovani.ts`. Řídila jsem se zadáním (JS, `src/splitBill.js`).
+12. **Offline (spec kap. 7, service worker)** v tomto úkolu není. Appka je offline díky vendorované knihovně, service worker nepřidán.
+13. **`index.html` se v této větvi nespustí**, dokud v `main` nebude `src/splitBill.js` (`main.js` ho importuje podle zadání).
+14. **qrcode-generator 2.0.4 z npm** neobsahuje soubor LICENSE. Do `src/ui/vendor/LICENSE` jsem přidala standardní MIT text s autorským řádkem z hlavičky souboru `qrcode.mjs`. Samotný `qrcode.mjs` je beze změny (už exportuje default).
