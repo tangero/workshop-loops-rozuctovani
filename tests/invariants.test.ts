@@ -7,7 +7,7 @@
  */
 import { describe, expect, it } from "vitest";
 import fc from "fast-check";
-import { computeBill } from "../src/rozuctovani";
+import { computeBill } from "../src/splitBill.js";
 import type { Bill, ComputeResult } from "./contract";
 import { arbBill, arbPermutation } from "./helpers/arbitraries";
 import { expected, floorOf, isZero } from "./helpers/oracle";

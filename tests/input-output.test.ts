@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from "vitest";
 import fc from "fast-check";
-import { formatCzk, parseAmount, spdPayload, toIban } from "../src/rozuctovani";
+import { formatCzk, parseAmount, spdPayload, toIban } from "../src/splitBill.js";
 
 const NBSP = " ";
 

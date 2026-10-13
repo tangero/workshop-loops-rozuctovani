@@ -6,7 +6,7 @@
  * Kontrakt funkcí je v tests/contract.ts.
  */
 import { describe, expect, it } from "vitest";
-import { computeBill } from "../src/rozuctovani";
+import { computeBill } from "../src/splitBill.js";
 import type { Bill, ComputeResult, ErrorCode, Item, Person } from "./contract";
 import { expected } from "./helpers/oracle";
 
