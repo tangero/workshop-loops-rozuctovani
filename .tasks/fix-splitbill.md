@@ -70,4 +70,8 @@ Postupuj v těchto krocích. Po každém kroku spusť uvedené testy a pokračuj
 
 ## Rozpory
 
-(zatím žádné)
+Z code review (vypořádání po kolech, viz komentář v PR #1). Tyto tři nálezy kontrakt ani spec neřeší, takže čekají na rozhodnutí:
+
+1. **Duplicitní `id` osob.** `people` se dvěma osobami se stejným `id` projde validací. Útratu pak dostane jen poslední z nich a ve výsledku jsou dva záznamy se stejným `personId`. Oprava potřebuje nový chybový kód (např. `DUPLICATE_ID`) v `tests/contract.ts`.
+2. **QR platba nad 9 999 999,99 Kč.** SPD 1.0 povoluje v poli `AM` nejvýš 10 znaků. Spec připouští převod až 19 999 998,00 Kč, ze kterého vznikne `AM:19999998.00` (11 znaků). `spdPayload` vrací vždy `string`. Je potřeba rozhodnout, co dělat s velkou částkou: vrátit `null`, vyhodit výjimku, nebo snížit limity ve specu.
+3. **`formatCzk` s necelým číslem.** Pro vstup, který není celý haléř, vrátí nesmysl („1,.5 Kč“). Kontrakt neříká, co má funkce v takovém případě udělat. Návrh: vyhodit `RangeError`, protože jde o chybu programátora, ne uživatele.

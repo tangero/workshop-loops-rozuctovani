@@ -14,6 +14,7 @@
  * @typedef {import("../tests/contract.ts").Person} Person
  * @typedef {import("../tests/contract.ts").Transfer} Transfer
  * @typedef {import("../tests/contract.ts").Share} Share
+ * @typedef {import("../tests/contract.ts").Warning} Warning
  */
 
 const MAX_PEOPLE = 30;
@@ -26,8 +27,8 @@ const MAX_WEIGHT = 9; // kap. 1.2
 const PREFIX_WEIGHTS = [10, 5, 8, 4, 2, 1];
 const ACCOUNT_WEIGHTS = [6, 3, 7, 9, 10, 5, 8, 4, 2, 1];
 
-/** Zjistí, jestli je hodnota celé číslo v bezpečném rozsahu a v mezích. */
 /**
+ * Zjistí, jestli je hodnota celé číslo v bezpečném rozsahu a v mezích.
  * @param {unknown} v
  * @param {number} min
  * @param {number} max
@@ -63,17 +64,42 @@ function addFraction(f, n, d) {
   f.den = den;
 }
 
+/** @param {unknown} v @returns {v is Record<string, any>} */
+function isObject(v) {
+  return typeof v === "object" && v !== null && !Array.isArray(v);
+}
+
+const graphemes = new Intl.Segmenter("cs", { granularity: "grapheme" });
+
+/**
+ * Délka jména ve znacích, jak je uživatel vidí (kap. 4.2): „é“ zapsané jako
+ * e + kombinující čárka je jeden znak, emoji se ZWJ také.
+ * @param {string} name
+ * @returns {number}
+ */
+function nameLength(name) {
+  let n = 0;
+  for (const _ of graphemes.segment(name)) n++;
+  return n;
+}
+
 /**
  * Kontroluje položky, lidi, plátce, slevu a spropitné (kap. 1.8, 3.1, 4.2).
- * Vrací seznam všech chyb najednou.
+ * Vrací seznam všech chyb najednou a S₀, pokud jde spočítat. Snese i
+ * poškozený vstup (např. účet ze starší verze v localStorage) bez výjimky.
  * @param {Bill} bill
- * @returns {BillError[]}
+ * @returns {{ errors: BillError[], subtotal: number | null }}
  */
 function validate(bill) {
   /** @type {BillError[]} */
   const errors = [];
-  const people = bill.people;
-  const items = bill.items;
+  /** @type {Record<string, any>} */
+  const b = isObject(bill) ? bill : {};
+  // Ještě nezkontrolovaná data: typy Person a Item platí až po validaci.
+  /** @type {Record<string, any>[]} */
+  const people = Array.isArray(b.people) ? b.people.filter(isObject) : [];
+  /** @type {Record<string, any>[]} */
+  const items = Array.isArray(b.items) ? b.items.filter(isObject) : [];
   const ids = new Set(people.map((p) => p.id));
 
   if (people.length === 0) errors.push({ code: "NO_PEOPLE" });
@@ -81,17 +107,17 @@ function validate(bill) {
 
   const seenNames = new Set();
   for (const p of people) {
-    const name = p.name.trim();
+    const name = typeof p.name === "string" ? p.name.normalize("NFC").trim() : "";
     if (name === "") {
       errors.push({ code: "EMPTY_NAME", personId: p.id });
       continue;
     }
-    if ([...name].length > MAX_NAME) errors.push({ code: "NAME_TOO_LONG", personId: p.id });
+    if (nameLength(name) > MAX_NAME) errors.push({ code: "NAME_TOO_LONG", personId: p.id });
     const key = name.toLowerCase();
     if (seenNames.has(key)) errors.push({ code: "DUPLICATE_NAME", personId: p.id });
     seenNames.add(key);
   }
-  if (people.length > 0 && !ids.has(bill.payerId)) errors.push({ code: "PAYER_INVALID" });
+  if (people.length > 0 && !ids.has(b.payerId)) errors.push({ code: "PAYER_INVALID" });
 
   if (items.length === 0) errors.push({ code: "NO_ITEMS" });
   if (items.length > MAX_ITEMS) errors.push({ code: "TOO_MANY_ITEMS" });
@@ -102,7 +128,7 @@ function validate(bill) {
       allPricesValid = false;
       errors.push({ code: "INVALID_PRICE", itemId: item.id });
     }
-    const entries = Object.entries(item.weights);
+    const entries = isObject(item.weights) ? Object.entries(item.weights) : [];
     if (entries.length === 0) errors.push({ code: "ITEM_NO_PEOPLE", itemId: item.id });
     for (const [personId, w] of entries) {
       if (!ids.has(personId)) {
@@ -113,22 +139,24 @@ function validate(bill) {
     }
   }
 
-  const discountValid = isIntInRange(bill.discount, 0, Number.MAX_SAFE_INTEGER);
+  const discountValid = isIntInRange(b.discount, 0, Number.MAX_SAFE_INTEGER);
+  const discount = /** @type {number} */ (b.discount);
   if (!discountValid) errors.push({ code: "INVALID_DISCOUNT" });
 
   // Základ S₀ a S lze spočítat, jen když jsou všechny ceny a sleva v pořádku.
   const baseKnown = allPricesValid && items.length > 0 && discountValid;
-  const subtotal = items.reduce((s, i) => s + i.price, 0);
-  if (baseKnown && bill.discount >= subtotal) errors.push({ code: "DISCOUNT_TOO_HIGH" });
+  const subtotal = baseKnown ? items.reduce((s, i) => s + i.price, 0) : null;
+  if (subtotal !== null && discount >= subtotal) errors.push({ code: "DISCOUNT_TOO_HIGH" });
 
-  const tip = bill.tip;
+  /** @type {Record<string, any>} */
+  const tip = isObject(b.tip) ? b.tip : {};
   if (tip.mode === "percent") {
     if (![5, 10, 15].includes(tip.p)) errors.push({ code: "INVALID_TIP" });
   } else if (tip.mode === "total") {
     if (!Number.isSafeInteger(tip.total)) {
       errors.push({ code: "INVALID_TIP" });
-    } else if (baseKnown && bill.discount < subtotal) {
-      const base = subtotal - bill.discount;
+    } else if (subtotal !== null && discount < subtotal) {
+      const base = subtotal - discount;
       if (tip.total < base) errors.push({ code: "TOTAL_BELOW_BASE" });
       else if (tip.total > 2 * base) errors.push({ code: "TOTAL_ABOVE_DOUBLE" });
     }
@@ -136,7 +164,7 @@ function validate(bill) {
     errors.push({ code: "INVALID_TIP" });
   }
 
-  return errors;
+  return { errors, subtotal };
 }
 
 /**
@@ -146,14 +174,13 @@ function validate(bill) {
  * @returns {ComputeResult}
  */
 export function computeBill(bill) {
-  const errors = validate(bill);
-  if (errors.length > 0) return { ok: false, errors };
+  const { errors, subtotal } = validate(bill);
+  if (errors.length > 0 || subtotal === null) return { ok: false, errors };
 
   const people = bill.people;
   const items = bill.items;
 
   // S₀ a S (kap. 1.3)
-  const subtotal = items.reduce((s, i) => s + i.price, 0);
   const discount = bill.discount;
   const base = subtotal - discount;
 
@@ -165,6 +192,7 @@ export function computeBill(bill) {
     tip = bill.tip.total - base;
   }
   const total = base + tip; // P (kap. 1.5)
+  /** @type {Warning[]} */
   const warnings = [];
   if (10 * tip > 3 * base) warnings.push("TIP_OVER_30");
 
@@ -176,8 +204,8 @@ export function computeBill(bill) {
     const entries = Object.entries(item.weights);
     const weightSum = BigInt(entries.reduce((s, [, w]) => s + w, 0));
     for (const [personId, w] of entries) {
-      const i = index.get(personId);
-      if (i === undefined) continue;
+      // validate() zaručuje, že každá osoba ve vahách je u stolu.
+      const i = /** @type {number} */ (index.get(personId));
       addFraction(spend[i], BigInt(item.price) * BigInt(w), weightSum);
     }
   }
@@ -185,8 +213,11 @@ export function computeBill(bill) {
   // Podíl q_o = P × U_o / S₀ jako zlomek; f_o = ⌊q_o⌋, zbytek v čitateli (kap. 1.5, 1.6)
   const S0 = BigInt(subtotal);
   const PB = BigInt(total);
+  /** @type {bigint[]} */
   const denoms = [];
+  /** @type {bigint[]} */
   const remainders = [];
+  /** @type {number[]} */
   const floors = [];
   for (const u of spend) {
     const den = u.den * S0;
@@ -269,6 +300,16 @@ function mod11Ok(digits, weights) {
 }
 
 /**
+ * Základní část čísla účtu musí mít aspoň dvě nenulové číslice (vyhláška ČNB
+ * č. 169/2011 Sb.). Samé nuly projdou mod 11, ale účet neexistuje.
+ * @param {string} account
+ * @returns {boolean}
+ */
+function hasTwoNonZero(account) {
+  return [...account].filter((d) => d !== "0").length >= 2;
+}
+
+/**
  * IBAN mod 97: písmena se převedou na čísla (A = 10, …), výsledek je číslo.
  * @param {string} s
  * @returns {number}
@@ -289,6 +330,7 @@ export function toIban(input) {
 
   if (s.startsWith("CZ")) {
     if (!/^CZ\d{22}$/.test(s)) return null;
+    if (!hasTwoNonZero(s.slice(-10))) return null;
     return mod97(s.slice(4) + s.slice(0, 4)) === 1 ? s : null;
   }
 
@@ -297,6 +339,7 @@ export function toIban(input) {
   const prefix = (m[1] ?? "").padStart(6, "0");
   const account = m[2].padStart(10, "0");
   const bank = m[3];
+  if (!hasTwoNonZero(account)) return null;
   if (!mod11Ok(prefix, PREFIX_WEIGHTS) || !mod11Ok(account, ACCOUNT_WEIGHTS)) return null;
 
   const bban = bank + prefix + account;
