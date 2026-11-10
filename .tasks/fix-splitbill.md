@@ -1,14 +1,14 @@
 # Úkol: fix/splitbill
 
 - **Větev:** `fix/splitbill`
-- **Worktree:** `/Users/patrickzandl/GitHub/workshop-loops2-splitbill`
+- **Worktree:** `../workshop-loops2-splitbill` (vedle hlavního checkoutu)
 - **Model:** Haiku 5.5
 
 ## Kontext
 
 Webová appka pro český trh rozdělí účet v restauraci mezi lidi u stolu. Jeden člověk zaplatí kartou a ostatní mu pošlou svůj podíl QR platbou. Appka je statická, bez serveru.
 
-- Jediný zdroj pravdy je `spec-rev.md`. Pro tento úkol jsou důležité tyto kapitoly:
+- Jediný zdroj pravdy je `spec.md`. Pro tento úkol jsou důležité tyto kapitoly:
   - 1: výpočetní pravidla,
   - 2: invarianty,
   - 4.4: zadávání částek,
@@ -30,7 +30,8 @@ Webová appka pro český trh rozdělí účet v restauraci mezi lidi u stolu. J
    - `formatCzk`,
    - `toIban`,
    - `spdPayload`.
-2. Ve třech souborech `tests/edge-cases.test.ts`, `tests/input-output.test.ts` a `tests/invariants.test.ts` změnit **jen** řádek importu z `"../src/rozuctovani"` na `"../src/splitBill.js"`. Nic jiného v testech neměň.
+
+Testy už `../src/splitBill.js` importují, takže v nich nic neměníš.
 
 Postupuj v těchto krocích. Po každém kroku spusť uvedené testy a pokračuj, až když projdou:
 
@@ -50,10 +51,11 @@ Postupuj v těchto krocích. Po každém kroku spusť uvedené testy a pokračuj
 ### Pravidla
 
 - Peníze jsou vždy celá čísla v haléřích. Nepoužívej desetinná čísla, `toFixed`, `parseFloat` ani `Math.round` na částkách.
-- **Nečti `tests/helpers/oracle.ts`.** Je to nezávislý referenční výpočet, se kterým testy porovnávají tvůj kód. Když ho opíšeš, testy přestanou cokoli dokazovat. Algoritmus ber jen ze `spec-rev.md`.
-- Neměň `spec-rev.md`, `package.json`, `package-lock.json`, `tests/contract.ts`, `tests/helpers/` ani testy (kromě importu).
+- **Nečti `tests/helpers/oracle.ts`.** Je to nezávislý referenční výpočet, se kterým testy porovnávají tvůj kód. Když ho opíšeš, testy přestanou cokoli dokazovat. Algoritmus ber jen ze `spec.md`.
+- Neměň `spec.md`, `package.json`, `package-lock.json`, `tests/contract.ts`, `tests/helpers/` ani testy.
 - Nesahej na `src/ui/`, `index.html` ani na nic mimo tento worktree.
 - Když podle tebe test odporuje specu, test neměň. Zapiš to do oddílu „Rozpory“ na konci tohoto souboru.
+- Po každém kroku přepiš `state/split.md`: co je hotové, reálný souhrn posledního `npm test`, co padá a další krok.
 - Nepracuj na `main`. Nemerguj.
 
 ## Hotovo (stop condition, čte reviewer)
@@ -63,7 +65,7 @@ Postupuj v těchto krocích. Po každém kroku spusť uvedené testy a pokračuj
 1. `npm test` projde: **147 testů, 0 failed, 0 skipped**.
 2. `npx tsc --noEmit --strict --allowJs --checkJs false --target es2022 --module esnext --moduleResolution bundler --skipLibCheck tests/*.ts tests/helpers/*.ts` nehlásí žádnou chybu.
 3. `grep -nE "toFixed|parseFloat|Math\.round" src/splitBill.js` nic nenajde.
-4. `git diff main --stat` ukazuje jen `src/splitBill.js`, `.tasks/fix-splitbill.md` a tři testové soubory. V testech se změnil jen řádek importu (ověř `git diff main -- tests`).
+4. `git diff main --stat` ukazuje jen `src/splitBill.js`, `.tasks/fix-splitbill.md` a `state/split.md`. Testy jsou beze změny (`git diff main -- tests` je prázdný).
 5. Větev je nahraná na `origin` a existuje **draft** PR `fix/splitbill` → `main`. Jeho popis obsahuje reálný souhrn výstupu `npm test`.
 
 **Pojistka:** když po 3 pokusech nedokážeš projít jeden krok, skonči. Commitni, co máš, otevři draft PR a do popisu napiš, který krok to byl, které testy padají a s jakou chybou. Nic nemerguj.

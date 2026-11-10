@@ -1,6 +1,6 @@
 /**
  * Rozúčtování účtu v restauraci: výpočet, parser částek, formát, IBAN a QR platba.
- * Podle spec-rev.md (kap. 1, 4.4–4.8). Kontrakt funkcí je v tests/contract.ts.
+ * Podle spec.md (kap. 1, 4.4–4.8). Kontrakt funkcí je v tests/contract.ts.
  *
  * Všechny peníze jsou celá čísla v haléřích. Podíly se počítají přesně v BigInt.
  */
