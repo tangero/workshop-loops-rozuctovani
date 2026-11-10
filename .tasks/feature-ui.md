@@ -1,14 +1,14 @@
 # Úkol: feature/ui
 
 - **Větev:** `feature/ui`
-- **Worktree:** `/Users/patrickzandl/GitHub/workshop-loops2-ui`
+- **Worktree:** `../workshop-loops2-ui` (vedle hlavního checkoutu)
 - **Model:** Haiku 5.5
 
 ## Kontext
 
 Webová appka pro český trh rozdělí účet v restauraci mezi lidi u stolu. Jeden člověk zaplatí kartou a ostatní mu pošlou svůj podíl QR platbou. Appka je statická, bez serveru a bez účtů, a běží na jednom telefonu.
 
-- Jediný zdroj pravdy je `spec-rev.md`. Pro tento úkol jsou důležité tyto kapitoly:
+- Jediný zdroj pravdy je `spec.md`. Pro tento úkol jsou důležité tyto kapitoly:
   - 4.1: čtyři obrazovky,
   - 4.2–4.3: lidé a položky,
   - 4.5: každá částka musí mít „Kč“,
@@ -47,7 +47,7 @@ Webová appka pro český trh rozdělí účet v restauraci mezi lidi u stolu. J
 ### Pravidla
 
 - V `src/ui/` žádná aritmetika nad částkami (`+`, `-`, `*`, `/` nad penězi), žádné `toFixed` ani `parseFloat`. Všechno jde přes `api`.
-- Nesahej na `src/splitBill.js`, `tests/*.test.ts`, `tests/helpers/`, `tests/contract.ts` ani `spec-rev.md`.
+- Nesahej na `src/splitBill.js`, `tests/*.test.ts`, `tests/helpers/`, `tests/contract.ts` ani `spec.md`.
 - Měnit smíš jen `index.html`, `src/ui/**`, `tests/ui/**`, `package.json`, `package-lock.json` a tento soubor.
 - `npm test` v této větvi padá kvůli chybějícímu `src/splitBill.js`. To je v pořádku a neopravuj to. Spouštěj jen `npx vitest run tests/ui`.
 - Nepracuj na `main`. Nemerguj.
@@ -76,7 +76,7 @@ Webová appka pro český trh rozdělí účet v restauraci mezi lidi u stolu. J
 8. **Mazání položky** (`Smazat položku`) spec neuvádí. Přidala jsem ho, bez něj by nešla opravit omylem zadaná položka.
 9. **Nový účet** vyžaduje dvojí ťuknutí (spec neuvádí potvrzení). Smaže `Bill`, `Settings` nechá (spec kap. 5).
 10. **Váhy 4–9 přes ťuknutí** (spec 4.3 říká jen 0→1→2→3→0): ťuknutí na váhu 4–9 přepne na 0. Změny nad 3 se dělají v rozbalovací části „Váhy 4 až 9“.
-11. **Jazyk a stack**: spec kap. 7 říká „HTML, CSS, TypeScript“, zadání a kontrakt říkají `src/splitBill.js` a kontrakt `src/rozuctovani.ts`. Řídila jsem se zadáním (JS, `src/splitBill.js`).
+11. **Jazyk a stack**: spec kap. 7 říká „HTML, CSS, TypeScript“, zadání a kontrakt říkají `src/splitBill.js` a kontrakt `src/rozuctovani.ts`. Řídila jsem se zadáním (JS, `src/splitBill.js`). **Vyřešeno na `main`:** kap. 7 i kontrakt teď říkají JS a `src/splitBill.js`.
 12. **Offline (spec kap. 7, service worker)** v tomto úkolu není. Appka je offline díky vendorované knihovně, service worker nepřidán.
 13. **`index.html` se v této větvi nespustí**, dokud v `main` nebude `src/splitBill.js` (`main.js` ho importuje podle zadání).
 14. **qrcode-generator 2.0.4 z npm** neobsahuje soubor LICENSE. Do `src/ui/vendor/LICENSE` jsem přidala standardní MIT text s autorským řádkem z hlavičky souboru `qrcode.mjs`. Samotný `qrcode.mjs` je beze změny (už exportuje default).
