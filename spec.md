@@ -227,13 +227,13 @@ Formát SPD 1.0 (český standard QR Platba):
 
 ## 7. Mechanika
 
-- Statická webová appka (HTML, CSS, TypeScript), bez backendu.
+- Statická webová appka (HTML, CSS, JavaScript v ES modulech, typy přes JSDoc), bez backendu. Výpočetní logika je v `src/splitBill.js`, kontrakt v `tests/contract.ts`.
 - Zlomky (`U_o`, `q_o`) se počítají přesně v `BigInt` jako čitatel a jmenovatel. Jmenovatel může být součin součtů vah, proto ne `number`.
 - Uložení `Bill` a `Settings` v `localStorage`. Když úložiště nejde, appka funguje dál, jen si nic nepamatuje.
 - Po prvním načtení funguje offline (service worker).
 - Testy:
   - jednotkové testy všech řádků tabulky v kap. 6,
-  - property-based testy invariantů I1–I9 na náhodných vstupech v mezích kap. 3.1,
+  - property-based testy invariantů I1–I11 na náhodných vstupech v mezích kap. 3.1,
   - test parseru částek a převodu čísla účtu na IBAN.
 - Hosting: libovolný statický hosting.
 
@@ -248,3 +248,4 @@ Formát SPD 1.0 (český standard QR Platba):
 | 3 | Číslo účtu patří k účtu, `Settings` jen předvyplňuje. Upřesněn plátce a předvýběr u nové položky. I4 zpřísněn na `T ≤ S`. Podmínka v kap. 1.8 sjednocena s kap. 1.4. | Pamatovaný účet by tiše poslal peníze majiteli telefonu, i když platil někdo jiný. Kap. 1.8 a 1.4 si odporovaly v mezi pro Celkem. |
 | 4 | Přidána sleva na celý účet v korunách (kap. 1.3), rozpouští se podle útraty a podíl se počítá z útraty před slevou. Nové invarianty I10 a I11, nové hraniční případy. U potvrzených pravidel odstraněna značka [návrh]. | Uživatel slevu požadoval a potvrdil návrhy z kol 1–3. |
 | 5 | Invarianty v kap. 2 dostaly vedle formálního zápisu i český zápis. Obsah se nezměnil. | Uživatel invarianty schválil a chtěl je mít čitelné bez vzorců. |
+| 6 | Kap. 7 sjednocena se zbytkem specu a s kontraktem: JavaScript místo TypeScriptu, invarianty I1–I11. Spec přejmenován na `spec.md`. | Kap. 7 zůstala po kole 4 pozadu a odporovala kontraktu i testům. |
