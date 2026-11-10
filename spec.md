@@ -2,7 +2,7 @@
 
 Webová appka pro český trh. Jeden člověk zaplatí účet kartou, appka spočítá, kolik mu má každý další poslat, a ukáže každému QR platbu. Běží na jednom telefonu, bez serveru a bez účtů.
 
-Zdroj rozhodnutí: stránka Rozhodnutí o rozúčtování (https://claude.ai/artifact/Wxuk5wpYDsvGso32qfUQYA). Značka (R1) až (R10) odkazuje na rozhodnutí tam. Značka **[návrh]** označuje pravidlo, které doplnil Claude a uživatel ho zatím nepotvrdil. Návrhy z kol 1–3 uživatel potvrdil 2026-10-13.
+Značka (R1) až (R10) odkazuje na rozhodnutí, která uživatel udělal před sepsáním specu. Značka **[návrh]** označuje pravidlo, které doplnil Claude a uživatel ho zatím nepotvrdil. Návrhy z kol 1–3 uživatel potvrdil 2026-10-13.
 
 Pořadí kapitol odpovídá tomu, jak pravděpodobně se budou měnit. Nahoře jsou výpočetní pravidla, rozsah a vše, co uživatel vidí, dole mechanika.
 
