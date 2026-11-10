@@ -1,6 +1,6 @@
 /**
  * Zadávání a zobrazení částek, číslo účtu a QR platba
- * (spec-rev.md, kap. 4.4, 4.5, 4.7, 4.8). Kontrakt je v tests/contract.ts.
+ * (spec.md, kap. 4.4, 4.5, 4.7, 4.8). Kontrakt je v tests/contract.ts.
  */
 import { describe, expect, it } from "vitest";
 import fc from "fast-check";

@@ -1,5 +1,5 @@
 /**
- * Generátory náhodných platných účtů v mezích spec-rev.md, kap. 3.1 a 1.8.
+ * Generátory náhodných platných účtů v mezích spec.md, kap. 3.1 a 1.8.
  */
 import fc from "fast-check";
 import type { Bill, Item, Person, Tip } from "../contract";

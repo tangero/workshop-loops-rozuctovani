@@ -1,5 +1,5 @@
 /**
- * Invarianty I1–I11 ze spec-rev.md, kap. 2. Každý se ověřuje na stovkách
+ * Invarianty I1–I11 ze spec.md, kap. 2. Každý se ověřuje na stovkách
  * náhodných platných účtů (fast-check), ne na jednom příkladu.
  *
  * Kontrakt funkcí je v tests/contract.ts. Referenční výpočet podle vzorců

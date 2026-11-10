@@ -1,7 +1,7 @@
 /**
  * Hraniční případy computeBill. Požadované (N = 0, N = 1, 100/3, záporná
  * částka) a další, které by nám mohly dělat problémy. Očekávané hodnoty
- * jsou spočítané ručně ze vzorců spec-rev.md, ne z implementace.
+ * jsou spočítané ručně ze vzorců spec.md, ne z implementace.
  *
  * Kontrakt funkcí je v tests/contract.ts.
  */

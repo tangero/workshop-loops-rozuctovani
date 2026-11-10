@@ -1,7 +1,8 @@
 /**
- * KONTRAKT — odvozený ze spec-rev.md, ne z kódu (kód zatím neexistuje).
+ * KONTRAKT — odvozený ze spec.md, ne z kódu (kód zatím neexistuje).
  *
- * Implementace patří do `src/rozuctovani.ts` a musí exportovat tyto funkce:
+ * Implementace patří do `src/splitBill.js` (ES modul v čistém JavaScriptu,
+ * typy přes JSDoc z tohoto souboru) a musí exportovat tyto funkce:
  *
  *   computeBill(bill: Bill): ComputeResult
  *     Bere celý rozpracovaný účet (spec kap. 5) a vrací buď výsledek
