@@ -1,12 +1,12 @@
 /**
  * Hraniční případy computeBill. Požadované (N = 0, N = 1, 100/3, záporná
  * částka) a další, které by nám mohly dělat problémy. Očekávané hodnoty
- * jsou spočítané ručně ze vzorců spec-rev.md, ne z implementace.
+ * jsou spočítané ručně ze vzorců spec.md, ne z implementace.
  *
  * Kontrakt funkcí je v tests/contract.ts.
  */
 import { describe, expect, it } from "vitest";
-import { computeBill } from "../src/rozuctovani";
+import { computeBill } from "../src/splitBill.js";
 import type { Bill, ComputeResult, ErrorCode, Item, Person } from "./contract";
 import { expected } from "./helpers/oracle";
 

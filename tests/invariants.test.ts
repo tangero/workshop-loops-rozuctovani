@@ -1,5 +1,5 @@
 /**
- * Invarianty I1–I11 ze spec-rev.md, kap. 2. Každý se ověřuje na stovkách
+ * Invarianty I1–I11 ze spec.md, kap. 2. Každý se ověřuje na stovkách
  * náhodných platných účtů (fast-check), ne na jednom příkladu.
  *
  * Kontrakt funkcí je v tests/contract.ts. Referenční výpočet podle vzorců
@@ -7,7 +7,7 @@
  */
 import { describe, expect, it } from "vitest";
 import fc from "fast-check";
-import { computeBill } from "../src/rozuctovani";
+import { computeBill } from "../src/splitBill.js";
 import type { Bill, ComputeResult } from "./contract";
 import { arbBill, arbPermutation } from "./helpers/arbitraries";
 import { expected, floorOf, isZero } from "./helpers/oracle";

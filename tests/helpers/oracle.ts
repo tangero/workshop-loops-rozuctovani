@@ -1,5 +1,5 @@
 /**
- * Referenční výpočet přímo podle vzorců ze spec-rev.md, kap. 1.2–1.6.
+ * Referenční výpočet přímo podle vzorců ze spec.md, kap. 1.2–1.6.
  * Slouží jen testům jako nezávislé měřítko. Počítá v přesných zlomcích
  * (BigInt), aby nemohl selhat stejně jako implementace s floaty.
  */
